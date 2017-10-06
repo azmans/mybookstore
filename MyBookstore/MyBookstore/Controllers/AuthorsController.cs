@@ -1,4 +1,6 @@
-﻿using MyBookstore.App_Code;
+﻿using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using MyBookstore.App_Code;
 using MyBookstore.Models;
 using System;
 using System.Collections.Generic;
@@ -222,6 +224,29 @@ namespace MyBookstore.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult GenerateReport()
+        {
+            ReportDocument rd = new ReportDocument();
+            rd.Load(Server.MapPath("~/Reports/RptAuthors.rpt"));
+            rd.SetDatabaseLogon("azmans", "firstsensibility", "TAFT-CL311", "mybookstore");
+            rd.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, true, "Authors Report");
+            return View();
+        }
+
+        public ActionResult GenerateIndividualReport(int? id)
+        {
+            if (id == null)
+                return RedirectToAction("Index");
+
+            ReportDocument rd = new ReportDocument();
+            rd.Load(Server.MapPath("~/Reports/RptAuthorIndividual.rpt"));
+            rd.SetDatabaseLogon("azmans", "firstsensibility", "TAFT-CL311", "mybookstore");
+            rd.SetParameterValue("authorID", id);
+            rd.SetParameterValue("Username", "Sarah Aniyah Azman");
+            rd.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, true, "Author #" + id.ToString() + " Report");
+            return View();
         }
     }
 }
